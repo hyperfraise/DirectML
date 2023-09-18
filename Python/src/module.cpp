@@ -144,6 +144,7 @@ PYBIND11_MODULE(pydirectml, module)
         .value("PADDING", DML_OPERATOR_PADDING)
         .value("VALUE_SCALE_2D", DML_OPERATOR_VALUE_SCALE_2D)
         .value("UPSAMPLE_2D", DML_OPERATOR_UPSAMPLE_2D)
+        .value("UPSAMPLE_3D", DML_OPERATOR_UPSAMPLE_3D)
         .value("GATHER", DML_OPERATOR_GATHER)
         .value("SPACE_TO_DEPTH", DML_OPERATOR_SPACE_TO_DEPTH)
         .value("DEPTH_TO_SPACE", DML_OPERATOR_DEPTH_TO_SPACE)
@@ -379,6 +380,11 @@ PYBIND11_MODULE(pydirectml, module)
         py::arg("output_sizes") = dml::TensorDimensions{});
 
     module.def("up_sample_2d", &dml::Upsample2D, "Create a two-dimensional up-sample expression.",
+        py::arg("input"),
+        py::arg("scale_size"),
+        py::arg("interpolation_mode"));
+
+    module.def("up_sample_3d", &dml::Upsample3D, "Create a three-dimensional up-sample expression.",
         py::arg("input"),
         py::arg("scale_size"),
         py::arg("interpolation_mode"));

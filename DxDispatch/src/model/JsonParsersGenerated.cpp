@@ -132,6 +132,7 @@ DML_OPERATOR_TYPE ParseDmlOperatorType(const rapidjson::Value& value)
     if (!strcmp(valueString, "DML_OPERATOR_PADDING") || !strcmp(valueString, "PADDING")) { return DML_OPERATOR_PADDING; }
     if (!strcmp(valueString, "DML_OPERATOR_VALUE_SCALE_2D") || !strcmp(valueString, "VALUE_SCALE_2D")) { return DML_OPERATOR_VALUE_SCALE_2D; }
     if (!strcmp(valueString, "DML_OPERATOR_UPSAMPLE_2D") || !strcmp(valueString, "UPSAMPLE_2D")) { return DML_OPERATOR_UPSAMPLE_2D; }
+    if (!strcmp(valueString, "DML_OPERATOR_UPSAMPLE_3D") || !strcmp(valueString, "UPSAMPLE_3D")) { return DML_OPERATOR_UPSAMPLE_3D; }
     if (!strcmp(valueString, "DML_OPERATOR_GATHER") || !strcmp(valueString, "GATHER")) { return DML_OPERATOR_GATHER; }
     if (!strcmp(valueString, "DML_OPERATOR_SPACE_TO_DEPTH") || !strcmp(valueString, "SPACE_TO_DEPTH")) { return DML_OPERATOR_SPACE_TO_DEPTH; }
     if (!strcmp(valueString, "DML_OPERATOR_DEPTH_TO_SPACE") || !strcmp(valueString, "DEPTH_TO_SPACE")) { return DML_OPERATOR_DEPTH_TO_SPACE; }
@@ -1990,6 +1991,20 @@ DML_OPERATOR_DESC* ParseDmlUpsample2dOperatorDesc(const rapidjson::Value& value,
     desc->InterpolationMode = ParseDmlInterpolationModeField(value, "InterpolationMode", true, {});
     auto opDesc = allocator.Allocate<DML_OPERATOR_DESC>();
     opDesc->Type = DML_OPERATOR_UPSAMPLE_2D;
+    opDesc->Desc = desc;
+    return opDesc;
+}
+ 
+DML_OPERATOR_DESC* ParseDmlUpsample3dOperatorDesc(const rapidjson::Value& value, bool fused, BucketAllocator& allocator)
+{
+    if (!value.IsObject()) { throw std::invalid_argument("Expected a valid JSON object."); }
+    auto desc = allocator.Allocate<DML_UPSAMPLE_3D_OPERATOR_DESC>();
+    desc->InputTensor = fused ? nullptr : ParseDmlTensorDescField(value, "InputTensor", allocator, true);
+    desc->OutputTensor = fused ? nullptr : ParseDmlTensorDescField(value, "OutputTensor", allocator, true);
+    desc->ScaleSize = *ParseDmlSize3dField(value, "ScaleSize", allocator, true);
+    desc->InterpolationMode = ParseDmlInterpolationModeField(value, "InterpolationMode", true, {});
+    auto opDesc = allocator.Allocate<DML_OPERATOR_DESC>();
+    opDesc->Type = DML_OPERATOR_UPSAMPLE_3D;
     opDesc->Desc = desc;
     return opDesc;
 }
@@ -4661,6 +4676,7 @@ DML_OPERATOR_DESC* ParseDmlOperatorDesc(const rapidjson::Value& value, bool fuse
     if (!strcmp(type, "DML_OPERATOR_PADDING1") || !strcmp(type, "PADDING1")) return ParseDmlPadding1OperatorDesc(descValue, fused, allocator);
     if (!strcmp(type, "DML_OPERATOR_VALUE_SCALE_2D") || !strcmp(type, "VALUE_SCALE_2D")) return ParseDmlValueScale2dOperatorDesc(descValue, fused, allocator);
     if (!strcmp(type, "DML_OPERATOR_UPSAMPLE_2D") || !strcmp(type, "UPSAMPLE_2D")) return ParseDmlUpsample2dOperatorDesc(descValue, fused, allocator);
+    if (!strcmp(type, "DML_OPERATOR_UPSAMPLE_3D") || !strcmp(type, "UPSAMPLE_3D")) return ParseDmlUpsample3dOperatorDesc(descValue, fused, allocator);
     if (!strcmp(type, "DML_OPERATOR_GATHER") || !strcmp(type, "GATHER")) return ParseDmlGatherOperatorDesc(descValue, fused, allocator);
     if (!strcmp(type, "DML_OPERATOR_SPACE_TO_DEPTH") || !strcmp(type, "SPACE_TO_DEPTH")) return ParseDmlSpaceToDepthOperatorDesc(descValue, fused, allocator);
     if (!strcmp(type, "DML_OPERATOR_DEPTH_TO_SPACE") || !strcmp(type, "DEPTH_TO_SPACE")) return ParseDmlDepthToSpaceOperatorDesc(descValue, fused, allocator);
@@ -4832,6 +4848,7 @@ Model::DmlDispatchableDesc::BindPoints GetBindPoints(const DML_OPERATOR_DESC& de
     case DML_OPERATOR_PADDING1: return GetBindPoints(*reinterpret_cast<const DML_PADDING1_OPERATOR_DESC*>(desc.Desc));
     case DML_OPERATOR_VALUE_SCALE_2D: return GetBindPoints(*reinterpret_cast<const DML_VALUE_SCALE_2D_OPERATOR_DESC*>(desc.Desc));
     case DML_OPERATOR_UPSAMPLE_2D: return GetBindPoints(*reinterpret_cast<const DML_UPSAMPLE_2D_OPERATOR_DESC*>(desc.Desc));
+    case DML_OPERATOR_UPSAMPLE_3D: return GetBindPoints(*reinterpret_cast<const DML_UPSAMPLE_3D_OPERATOR_DESC*>(desc.Desc));
     case DML_OPERATOR_GATHER: return GetBindPoints(*reinterpret_cast<const DML_GATHER_OPERATOR_DESC*>(desc.Desc));
     case DML_OPERATOR_SPACE_TO_DEPTH: return GetBindPoints(*reinterpret_cast<const DML_SPACE_TO_DEPTH_OPERATOR_DESC*>(desc.Desc));
     case DML_OPERATOR_DEPTH_TO_SPACE: return GetBindPoints(*reinterpret_cast<const DML_DEPTH_TO_SPACE_OPERATOR_DESC*>(desc.Desc));
