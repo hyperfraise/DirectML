@@ -1956,6 +1956,21 @@ DML_OPERATOR_DESC* ParseDmlValueScale2dOperatorDesc(const rapidjson::Value& valu
     opDesc->Desc = desc;
     return opDesc;
 }
+
+DML_OPERATOR_DESC* ParseDmlValueScale3dOperatorDesc(const rapidjson::Value& value, bool fused, BucketAllocator& allocator)
+{
+    if (!value.IsObject()) { throw std::invalid_argument("Expected a valid JSON object."); }
+    auto desc = allocator.Allocate<DML_VALUE_SCALE_3D_OPERATOR_DESC>();
+    desc->InputTensor = fused ? nullptr : ParseDmlTensorDescField(value, "InputTensor", allocator, true);
+    desc->OutputTensor = fused ? nullptr : ParseDmlTensorDescField(value, "OutputTensor", allocator, true);
+    desc->Scale = ParseFloat32Field(value, "Scale", true);
+    desc->ChannelCount = ParseUInt32Field(value, "ChannelCount", true);
+    desc->Bias = AsPointer(ParseFloat32ArrayField(value, "Bias", allocator, true));
+    auto opDesc = allocator.Allocate<DML_OPERATOR_DESC>();
+    opDesc->Type = DML_OPERATOR_VALUE_SCALE_3D;
+    opDesc->Desc = desc;
+    return opDesc;
+}
  
 Model::DmlDispatchableDesc::BindPoints GetBindPoints(const DML_VALUE_SCALE_2D_OPERATOR_DESC& desc)
 {

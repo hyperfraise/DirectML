@@ -174,6 +174,10 @@ function WriteOperatorFunction($Operator)
         {
             $Cpp += "    desc->$($Field.Name) = ${Deref}ParseDmlSize2dField(value, `"$($Field.Name)`", allocator, $Required);"
         }
+        elseif ($Field.Type -eq "size3D")
+        {
+            $Cpp += "    desc->$($Field.Name) = ${Deref}ParseDmlSize3dField(value, `"$($Field.Name)`", allocator, $Required);"
+        }
         else
         {
             throw "Serializing fields of type '$($Field.Type)' is not implemented!"
