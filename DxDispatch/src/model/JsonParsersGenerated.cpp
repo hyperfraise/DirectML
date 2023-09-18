@@ -1982,6 +1982,14 @@ Model::DmlDispatchableDesc::BindPoints GetBindPoints(const DML_VALUE_SCALE_2D_OP
     return bindPoints;
 }
  
+Model::DmlDispatchableDesc::BindPoints GetBindPoints(const DML_VALUE_SCALE_3D_OPERATOR_DESC& desc)
+{
+    Model::DmlDispatchableDesc::BindPoints bindPoints = {};
+    bindPoints.inputs.push_back({"InputTensor", 1, true});
+    bindPoints.outputs.push_back({"OutputTensor", 1, true});
+    return bindPoints;
+}
+ 
 DML_OPERATOR_DESC* ParseDmlUpsample2dOperatorDesc(const rapidjson::Value& value, bool fused, BucketAllocator& allocator)
 {
     if (!value.IsObject()) { throw std::invalid_argument("Expected a valid JSON object."); }
@@ -2011,6 +2019,14 @@ DML_OPERATOR_DESC* ParseDmlUpsample3dOperatorDesc(const rapidjson::Value& value,
 }
  
 Model::DmlDispatchableDesc::BindPoints GetBindPoints(const DML_UPSAMPLE_2D_OPERATOR_DESC& desc)
+{
+    Model::DmlDispatchableDesc::BindPoints bindPoints = {};
+    bindPoints.inputs.push_back({"InputTensor", 1, true});
+    bindPoints.outputs.push_back({"OutputTensor", 1, true});
+    return bindPoints;
+}
+
+Model::DmlDispatchableDesc::BindPoints GetBindPoints(const DML_UPSAMPLE_3D_OPERATOR_DESC& desc)
 {
     Model::DmlDispatchableDesc::BindPoints bindPoints = {};
     bindPoints.inputs.push_back({"InputTensor", 1, true});
