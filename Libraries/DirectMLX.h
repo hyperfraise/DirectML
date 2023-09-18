@@ -3601,11 +3601,13 @@ namespace dml
         uint32_t dimensionCount = static_cast<uint32_t>(inputTensor.sizes.size());
 
         // todo: support 1d convolution?
-        assert(dimensionCount == 4);
+        assert(dimensionCount == 4 || dimensionCount == 5);
         uint32_t spatialDimensionCount = dimensionCount - 2;
 
-        const uint32_t defaultStridesAndDilations[2] = { 1, 1 };
-        const uint32_t defaultPadding[2] = { 0, 0 };
+        // If the spatial dimension count is 2, we'll just use the first two elements by setting
+        // DimensionCount = 2 in the desc
+        const uint32_t defaultStridesAndDilations[3] = { 1, 1, 1 };
+        const uint32_t defaultPadding[3] = { 0, 0, 0 };
 
         assert(strides.empty() || strides.size() == spatialDimensionCount);
         assert(dilations.empty() || dilations.size() == spatialDimensionCount);
@@ -3665,6 +3667,8 @@ namespace dml
         return output; 
     }
 
+
+
     inline Expression QuantizedLinearConvolution(
         Expression input,
         Expression inputScale,
@@ -3713,11 +3717,13 @@ namespace dml
         uint32_t dimensionCount = static_cast<uint32_t>(inputTensor.sizes.size());
 
         // todo: suppord 1d convolution?
-        assert(dimensionCount == 4);
-        const uint32_t spatialDimensionCount = dimensionCount - 2;
+        assert(dimensionCount == 4 || dimensionCount == 5);
+        uint32_t spatialDimensionCount = dimensionCount - 2;
 
-        const uint32_t defaultStridesAndDilations[2] = { 1, 1 };
-        const uint32_t defaultPadding[2] = { 1, 1 };
+        // If the spatial dimension count is 2, we'll just use the first two elements by setting
+        // DimensionCount = 2 in the desc
+        const uint32_t defaultStridesAndDilations[3] = { 1, 1, 1 };
+        const uint32_t defaultPadding[3] = { 0, 0, 0 };
 
         assert(strides.empty() || strides.size() == spatialDimensionCount);
         assert(dilations.empty() || dilations.size() == spatialDimensionCount);
@@ -3749,6 +3755,7 @@ namespace dml
                 outputSizes.push_back(1 + (paddedSize - kernelSize) / strides[dim]);
             }
         }
+
 
         TensorDesc outputTensor(outputDataType, std::move(outputSizes), builder->GetTensorPolicy());
 
@@ -3787,6 +3794,7 @@ namespace dml
 
         return output;
     }
+
 
     // 
     // TODO: ReluGrad
