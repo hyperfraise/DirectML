@@ -144,6 +144,7 @@ PYBIND11_MODULE(pydirectml, module)
         .value("PADDING", DML_OPERATOR_PADDING)
         .value("VALUE_SCALE_2D", DML_OPERATOR_VALUE_SCALE_2D)
         .value("UPSAMPLE_2D", DML_OPERATOR_UPSAMPLE_2D)
+        .value("VALUE_SCALE_3D", DML_OPERATOR_VALUE_SCALE_3D)
         .value("UPSAMPLE_3D", DML_OPERATOR_UPSAMPLE_3D)
         .value("GATHER", DML_OPERATOR_GATHER)
         .value("SPACE_TO_DEPTH", DML_OPERATOR_SPACE_TO_DEPTH)
@@ -471,6 +472,17 @@ PYBIND11_MODULE(pydirectml, module)
             return dml::ValueScale2D(input, scale, bias);
         },
         "Scales and bias the input image per pixel. output = input * scale + bias[C]",
+        py::arg("input"),
+        py::arg("scale"),
+        py::arg("bias"));
+
+    module.def("value_scale_3d", [](
+        dml::Expression input,
+        float scale,
+        std::vector<float> bias) {
+            return dml::ValueScale3D(input, scale, bias);
+        },
+        "Scales and bias the input video per pixel. output = input * scale + bias[C]",
         py::arg("input"),
         py::arg("scale"),
         py::arg("bias"));
