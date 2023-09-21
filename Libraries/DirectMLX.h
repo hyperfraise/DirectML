@@ -3718,7 +3718,7 @@ namespace dml
 
         // todo: suppord 1d convolution?
         assert(dimensionCount == 4 || dimensionCount == 5);
-        uint32_t spatialDimensionCount = dimensionCount - 2;
+        const uint32_t spatialDimensionCount = dimensionCount - 2;
 
         // If the spatial dimension count is 2, we'll just use the first two elements by setting
         // DimensionCount = 2 in the desc
