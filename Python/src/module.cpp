@@ -319,7 +319,7 @@ PYBIND11_MODULE(pydirectml, module)
             return new DML_SIZE_3D { width, height, depth };
             }))
         .def_readwrite("width", &DML_SIZE_3D::Width)
-        .def_readwrite("height", &DML_SIZE_3D::Height);
+        .def_readwrite("height", &DML_SIZE_3D::Height)
         .def_readwrite("depth", &DML_SIZE_3D::Depth);
 
     py::class_<dml::FusedActivation>(module, "FusedActivation")
