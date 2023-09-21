@@ -144,8 +144,6 @@ PYBIND11_MODULE(pydirectml, module)
         .value("PADDING", DML_OPERATOR_PADDING)
         .value("VALUE_SCALE_2D", DML_OPERATOR_VALUE_SCALE_2D)
         .value("UPSAMPLE_2D", DML_OPERATOR_UPSAMPLE_2D)
-        .value("VALUE_SCALE_3D", DML_OPERATOR_VALUE_SCALE_3D)
-        .value("UPSAMPLE_3D", DML_OPERATOR_UPSAMPLE_3D)
         .value("GATHER", DML_OPERATOR_GATHER)
         .value("SPACE_TO_DEPTH", DML_OPERATOR_SPACE_TO_DEPTH)
         .value("DEPTH_TO_SPACE", DML_OPERATOR_DEPTH_TO_SPACE)
@@ -313,14 +311,6 @@ PYBIND11_MODULE(pydirectml, module)
             }))
         .def_readwrite("width", &DML_SIZE_2D::Width)
         .def_readwrite("height", &DML_SIZE_2D::Height);
-
-    py::class_<DML_SIZE_3D>(module, "Size3D")
-        .def(py::init([](uint32_t width, uint32_t height, uint32_t depth) {
-            return new DML_SIZE_3D { width, height, depth };
-            }))
-        .def_readwrite("width", &DML_SIZE_3D::Width)
-        .def_readwrite("height", &DML_SIZE_3D::Height)
-        .def_readwrite("depth", &DML_SIZE_3D::Depth);
 
     py::class_<dml::FusedActivation>(module, "FusedActivation")
         .def(py::init<DML_OPERATOR_TYPE, float, float>(),

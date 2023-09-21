@@ -2586,59 +2586,7 @@ namespace dml
         return output;
     }
     inline Expression ValueScale3D(
-        Expression input,
-        float scale,
-        Span<const float> bias)
-    {
-        detail::GraphBuilder* builder = input.Impl()->GetGraphBuilder();
-        TensorDesc inputTensor = input.Impl()->GetOutputDesc();
-        TensorDesc outputTensor(inputTensor.dataType, inputTensor.sizes, builder->GetTensorPolicy());
 
-        DML_VALUE_SCALE_3D_OPERATOR_DESC desc = {};
-        desc.InputTensor = inputTensor.AsPtr<DML_TENSOR_DESC>();
-        desc.OutputTensor = outputTensor.AsPtr<DML_TENSOR_DESC>();
-        desc.Scale = scale;
-        desc.ChannelCount = static_cast<uint32_t>(bias.size());
-        desc.Bias = bias.data();
-
-        detail::NodeOutput* const inputs[] = { input.Impl() };
-        detail::NodeID node = builder->CreateOperatorNode(DML_OPERATOR_VALUE_SCALE_3D, &desc, inputs);
-        detail::NodeOutput* output = builder->CreateNodeOutput(node, 0, std::move(outputTensor));
-
-        return output;
-    }
-
-    inline Expression Upsample3D(Expression input, DML_SIZE_3D scaleSize, DML_INTERPOLATION_MODE interpolationMode)
-    {
-        detail::GraphBuilder* builder = input.Impl()->GetGraphBuilder();
-
-        TensorDesc inputTensor = input.Impl()->GetOutputDesc();
-        assert(inputTensor.sizes.size() == 4 || inputTensor.sizes.size() == 5);
-
-        uint32_t i = 0;
-        TensorDimensions outputSizes;
-        outputSizes.push_back(inputTensor.sizes[i++]);                    // output[N] = input[N]
-        outputSizes.push_back(inputTensor.sizes[i++]);                    // output[C] = input[C]
-        if (inputTensor.sizes.size() == 5)
-        {
-            outputSizes.push_back(inputTensor.sizes[i++]);                // output[D] = input[D]
-        }
-        outputSizes.push_back(inputTensor.sizes[i++] * scaleSize.Height); // output[H] = input[H] * scaleH
-        outputSizes.push_back(inputTensor.sizes[i++] * scaleSize.Width);  // output[W] = input[W] * scaleW
-        TensorDesc outputTensor(inputTensor.dataType, std::move(outputSizes), builder->GetTensorPolicy());
-
-        DML_UPSAMPLE_3D_OPERATOR_DESC desc = {};
-        desc.InputTensor = inputTensor.AsPtr<DML_TENSOR_DESC>();
-        desc.OutputTensor = outputTensor.AsPtr<DML_TENSOR_DESC>();
-        desc.ScaleSize = scaleSize;
-        desc.InterpolationMode = interpolationMode;
-
-        detail::NodeOutput* const inputs[] = { input.Impl() };
-        detail::NodeID node = builder->CreateOperatorNode(DML_OPERATOR_UPSAMPLE_3D, &desc, inputs);
-        detail::NodeOutput* output = builder->CreateNodeOutput(node, 0, std::move(outputTensor));
-
-        return output;
-    }
 
     inline Expression Gather(
         Expression input,
